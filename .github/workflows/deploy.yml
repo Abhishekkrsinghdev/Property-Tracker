@@ -2,7 +2,7 @@ name: CD — Deploy to Oracle Cloud
 
 on:
   push:
-    branches: [main]       # Auto-deploy on every merge to main
+    branches: [master]       # Auto-deploy on every merge to master
   workflow_dispatch:        # Also allow manual trigger from GitHub Actions UI
 
 env:
@@ -94,7 +94,7 @@ jobs:
             cd /opt/proptrack
 
             # Pull latest compose file & deploy scripts from GitHub
-            git pull origin main
+            git pull origin master
 
             # Log in to GHCR to pull private images
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
