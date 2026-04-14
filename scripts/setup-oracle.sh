@@ -1,0 +1,108 @@
+#!/bin/bash
+# =============================================================================
+# PropTrack AI — Oracle Cloud VM First-Time Setup Script
+# Run this ONCE on a fresh Oracle Cloud Free Tier VM (Ubuntu 22.04)
+# =============================================================================
+# Usage:
+#   chmod +x scripts/setup-oracle.sh
+#   ./scripts/setup-oracle.sh
+# =============================================================================
+set -e
+
+echo "🚀 Starting PropTrack AI Oracle Cloud setup..."
+
+# ── System update ─────────────────────────────────────────────────────────────
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install -y \
+    curl git unzip ufw \
+    apt-transport-https \
+    ca-certificates \
+    gnupg \
+    lsb-release
+
+# ── Docker install ────────────────────────────────────────────────────────────
+echo "📦 Installing Docker..."
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+    https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update -y
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# Allow current user to run docker without sudo
+sudo usermod -aG docker $USER
+echo "✅ Docker installed."
+
+# ── Firewall ──────────────────────────────────────────────────────────────────
+echo "🔒 Configuring firewall..."
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw --force enable
+echo "✅ UFW configured (SSH, HTTP, HTTPS allowed)."
+
+# ── Clone repository ──────────────────────────────────────────────────────────
+APP_DIR="/opt/proptrack"
+if [ ! -d "$APP_DIR" ]; then
+    echo "📁 Cloning repository to $APP_DIR..."
+    sudo git clone https://github.com/YOUR_GITHUB_USERNAME/proptrack.git "$APP_DIR"
+    sudo chown -R $USER:$USER "$APP_DIR"
+else
+    echo "📁 Repository already exists at $APP_DIR, pulling latest..."
+    cd "$APP_DIR" && git pull origin main
+fi
+
+cd "$APP_DIR"
+
+# ── Environment file ──────────────────────────────────────────────────────────
+if [ ! -f "$APP_DIR/.env" ]; then
+    echo ""
+    echo "⚙️  Creating .env file from template..."
+    cp .env.example .env
+    echo ""
+    echo "❗ ACTION REQUIRED: Fill in your secrets in $APP_DIR/.env"
+    echo "   Open the file with: nano $APP_DIR/.env"
+    echo "   Required values:"
+    echo "     DB_PASSWORD       — strong random password"
+    echo "     JWT_SECRET        — 32+ character random string"
+    echo "     ANTHROPIC_API_KEY — from console.anthropic.com"
+    echo "     RESEND_API_KEY    — from resend.com (optional, emails will be mocked)"
+    echo ""
+    read -p "Press Enter after filling in .env to continue..."
+fi
+
+# ── Build frontend static assets ─────────────────────────────────────────────
+echo "🔨 Building React frontend..."
+cd "$APP_DIR/frontend"
+# Install Node via nvm if not present
+if ! command -v node &> /dev/null; then
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    nvm install 20
+fi
+npm ci
+npm run build
+echo "✅ Frontend built → frontend/dist/"
+
+# ── Start production stack ────────────────────────────────────────────────────
+cd "$APP_DIR"
+echo "🐳 Pulling Docker images and starting services..."
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+
+echo ""
+echo "✅ PropTrack AI is running!"
+echo "   → App:      http://$(curl -s ifconfig.me)"
+echo "   → API:      http://$(curl -s ifconfig.me)/api"
+echo "   → AI Docs:  http://$(curl -s ifconfig.me)/ai/docs"
+echo ""
+echo "Next steps:"
+echo "  1. Point your domain DNS A record to: $(curl -s ifconfig.me)"
+echo "  2. Run SSL provisioning: docker run --rm -v proptrack-certbot-conf:/etc/letsencrypt \\"
+echo "       -v proptrack-certbot-www:/var/www/certbot certbot/certbot certonly \\"
+echo "       --webroot -w /var/www/certbot -d yourdomain.com --email you@email.com --agree-tos"
+echo "  3. Update nginx/default.conf to enable HTTPS block, then: docker compose restart nginx"
+echo ""
+echo "🎉 Setup complete!"

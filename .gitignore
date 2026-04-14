@@ -1,0 +1,36 @@
+# Environment — NEVER commit this
+.env
+.env.local
+.env.*.local
+
+# Java / Maven
+backend/target/
+backend/.mvn/
+*.class
+*.jar
+!**/test-jar.jar
+
+# Python
+ai-service/__pycache__/
+ai-service/**/__pycache__/
+ai-service/*.pyc
+ai-service/.venv/
+ai-service/venv/
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Docker volumes
+pgdata/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
