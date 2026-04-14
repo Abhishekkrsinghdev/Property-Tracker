@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
     driver-class-name: org.h2.Driver
     username: sa
     password: 
@@ -10,9 +10,30 @@ spring:
       ddl-auto: create-drop
   flyway:
     enabled: false  # Skip migrations in unit tests to keep it fast
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 app:
   jwt:
     secret: "ThisIsASecretKeyForTestingPurposesOnlyAndItMustBeLongEnough"
+    expiration-ms: 3600000
+    refresh-expiration-ms: 86400000
   ai-service:
     url: "http://localhost:8000"
+  resend:
+    api-key: "re_test"
+    from-email: "test@example.com"
+  storage:
+    provider: "local"
+    dir: "target/uploads"
+    local:
+      public-base-url: "http://localhost:8080"
+    s3:
+      endpoint: ""
+      region: "us-east-1"
+      access-key: ""
+      secret-key: ""
+      bucket: ""
+      public-url-prefix: ""
