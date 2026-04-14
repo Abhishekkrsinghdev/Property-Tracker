@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    anthropic_api_key: str
+    anthropic_api_key: str = "sk-placeholder"
     spring_boot_url: str = "http://spring-boot:8080"
 
     # Model selection per task type
