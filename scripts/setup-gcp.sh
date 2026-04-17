@@ -27,6 +27,9 @@ echo "📦 Installing Docker..."
 # Detect OS ID (ubuntu or debian)
 OS_ID=$(grep '^ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
 
+# Clean up any bad previous attempts
+sudo rm -f /etc/apt/sources.list.d/docker.list
+
 # Add Docker's official GPG key:
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl
