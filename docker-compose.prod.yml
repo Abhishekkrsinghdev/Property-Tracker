@@ -27,7 +27,7 @@ services:
 
   # ── FastAPI AI Service ────────────────────────────────────────────────────────
   fastapi:
-    image: ${FASTAPI_IMAGE:-ghcr.io/yourusername/proptrack-fastapi:latest}
+    image: ${FASTAPI_IMAGE:-ghcr.io/Abhishekkrsinghdev/Property-Tracker-fastapi:latest}
     container_name: proptrack-fastapi
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
@@ -42,7 +42,7 @@ services:
 
   # ── Spring Boot Backend ───────────────────────────────────────────────────────
   spring-boot:
-    image: ${BACKEND_IMAGE:-ghcr.io/yourusername/proptrack-backend:latest}
+    image: ${BACKEND_IMAGE:-ghcr.io/Abhishekkrsinghdev/Property-Tracker-backend:latest}
     container_name: proptrack-spring
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/proptrack
