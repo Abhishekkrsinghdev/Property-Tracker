@@ -1,15 +1,15 @@
 #!/bin/bash
 # =============================================================================
-# PropTrack AI — Oracle Cloud VM First-Time Setup Script
-# Run this ONCE on a fresh Oracle Cloud Free Tier VM (Ubuntu 22.04)
+# PropTrack AI — Google Cloud VM First-Time Setup Script
+# Run this ONCE on a fresh Google Cloud e2-micro instance (Ubuntu 22.04 LTS)
 # =============================================================================
 # Usage:
-#   chmod +x scripts/setup-oracle.sh
-#   ./scripts/setup-oracle.sh
+#   chmod +x scripts/setup-gcp.sh
+#   ./scripts/setup-gcp.sh
 # =============================================================================
 set -e
 
-echo "🚀 Starting PropTrack AI Oracle Cloud setup..."
+echo "🚀 Starting PropTrack AI GCP setup..."
 
 # ── System update ─────────────────────────────────────────────────────────────
 sudo apt-get update -y
@@ -35,22 +35,33 @@ sudo usermod -aG docker $USER
 echo "✅ Docker installed."
 
 # ── Firewall ──────────────────────────────────────────────────────────────────
-echo "🔒 Configuring firewall..."
+echo "🔒 Configuring UFW firewall (internal VM level)..."
 sudo ufw allow OpenSSH
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw --force enable
 echo "✅ UFW configured (SSH, HTTP, HTTPS allowed)."
 
+echo "⚠️  IMPORTANT GCP FIREWALL INSTRUCTION ⚠️"
+echo "In GCP, enabling UFW inside the VM is not enough."
+echo "You MUST also add VPC Network Firewall Rules for HTTP and HTTPS:"
+echo "  1. Go to GCP Console -> VPC Network -> Firewall"
+echo "  2. Create Firewall Rule"
+echo "  3. Targets: All instances in the network (or targeting your VM tag)"
+echo "  4. Source IPv4 ranges: 0.0.0.0/0"
+echo "  5. Protocols and ports: Check 'tcp', enter '80, 443'"
+echo "Alternatively, edit your exact VM instance settings to check 'Allow HTTP traffic' and 'Allow HTTPS traffic'."
+echo "──────────────────────────────────────────────"
+
 # ── Clone repository ──────────────────────────────────────────────────────────
 APP_DIR="/opt/proptrack"
 if [ ! -d "$APP_DIR" ]; then
     echo "📁 Cloning repository to $APP_DIR..."
-    sudo git clone https://github.com/YOUR_GITHUB_USERNAME/proptrack.git "$APP_DIR"
+    sudo git clone https://github.com/Abhishekkrsinghdev/Property-Tracker.git "$APP_DIR"
     sudo chown -R $USER:$USER "$APP_DIR"
 else
     echo "📁 Repository already exists at $APP_DIR, pulling latest..."
-    cd "$APP_DIR" && git pull origin main
+    cd "$APP_DIR" && git pull origin master
 fi
 
 cd "$APP_DIR"
