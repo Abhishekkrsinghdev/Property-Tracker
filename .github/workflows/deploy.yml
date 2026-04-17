@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: Abhishekkrsinghdev/Property-Tracker
+  IMAGE_PREFIX: abhishekkrsinghdev/property-tracker
 
 jobs:
   # ── Build & push Docker images to GitHub Container Registry ─────────────────

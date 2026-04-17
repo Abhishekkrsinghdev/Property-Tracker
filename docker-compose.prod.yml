@@ -3,7 +3,7 @@
 # Images are pulled from GitHub Container Registry (GHCR) — not built on the server.
 # Run: docker compose -f docker-compose.prod.yml up -d
 
-version: '3.9'
+
 
 services:
 
@@ -27,7 +27,7 @@ services:
 
   # ── FastAPI AI Service ────────────────────────────────────────────────────────
   fastapi:
-    image: ${FASTAPI_IMAGE:-ghcr.io/Abhishekkrsinghdev/Property-Tracker-fastapi:latest}
+    image: ${FASTAPI_IMAGE:-ghcr.io/abhishekkrsinghdev/property-tracker-fastapi:latest}
     container_name: proptrack-fastapi
     environment:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
@@ -42,7 +42,7 @@ services:
 
   # ── Spring Boot Backend ───────────────────────────────────────────────────────
   spring-boot:
-    image: ${BACKEND_IMAGE:-ghcr.io/Abhishekkrsinghdev/Property-Tracker-backend:latest}
+    image: ${BACKEND_IMAGE:-ghcr.io/abhishekkrsinghdev/property-tracker-backend:latest}
     container_name: proptrack-spring
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/proptrack
