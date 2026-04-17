@@ -108,8 +108,13 @@ jobs:
             docker pull $BACKEND_IMAGE
             docker pull $FASTAPI_IMAGE
 
-            # Rolling restart — zero downtime for Nginx-served static frontend
-            docker compose -f docker-compose.prod.yml up -d --no-build
+            # Rolling restart with error logging
+            if ! docker compose -f docker-compose.prod.yml up -d --no-build; then
+              echo "❌ Docker compose failed. Showing logs to diagnose:"
+              docker compose -f docker-compose.prod.yml logs spring-boot
+              docker compose -f docker-compose.prod.yml logs fastapi
+              exit 1
+            fi
 
             # Prune dangling images to save disk space
             docker image prune -f

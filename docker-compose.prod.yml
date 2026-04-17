@@ -37,7 +37,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 120s
     restart: unless-stopped
 
   # ── Spring Boot Backend ───────────────────────────────────────────────────────
@@ -71,8 +71,8 @@ services:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/api/health || exit 1"]
       interval: 20s
       timeout: 10s
-      retries: 5
-      start_period: 60s
+      retries: 10
+      start_period: 300s
     restart: unless-stopped
 
   # ── Nginx Reverse Proxy + Static Frontend ─────────────────────────────────────
