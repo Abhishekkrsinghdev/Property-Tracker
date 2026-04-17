@@ -39,6 +39,9 @@ server:
 
 # ── Application-level config ──────────────────────────────────────────────────
 app:
+  # Frontend URL for email links
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
   # JWT
   jwt:
     secret: ${JWT_SECRET:ThisIsAVeryLongSecretKeyForJWTThatIsAtLeast256BitsLongForHS256Algorithm}

@@ -59,6 +59,7 @@ services:
       APP_STORAGE_S3_SECRET_KEY: ${APP_STORAGE_S3_SECRET_KEY:-}
       APP_STORAGE_S3_BUCKET: ${APP_STORAGE_S3_BUCKET:-proptrack}
       APP_STORAGE_S3_PUBLIC_URL_PREFIX: ${APP_STORAGE_S3_PUBLIC_URL_PREFIX:-}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
     volumes:
       - uploads:/app/uploads
     depends_on:

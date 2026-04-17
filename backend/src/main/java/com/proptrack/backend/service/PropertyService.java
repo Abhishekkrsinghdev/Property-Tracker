@@ -27,6 +27,9 @@ public class PropertyService {
     private final ValuationHistoryRepository valuationHistoryRepository;
     private final EmailService emailService;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
+
     @Transactional
     public PropertyResponse create(CreatePropertyRequest request, User owner) {
         Property property = Property.builder()
@@ -193,9 +196,9 @@ public class PropertyService {
                     <p>Hi,</p>
                     <p><strong>%s</strong> has invited you to co-own <strong>%s</strong> with a <strong>%.1f%%</strong> ownership share.</p>
                     <p>Click below to create your account and accept the invitation.</p>
-                    <p><a href="http://localhost:5173/register">Create Account →</a></p>
+                    <p><a href="%s/register">Create Account →</a></p>
                     <p>Best,<br/>PropTrack AI</p>
-                    """, inviter.getFullName(), property.getName(), request.sharePercent());
+                    """, inviter.getFullName(), property.getName(), request.sharePercent(), frontendUrl);
         }
 
         emailService.sendEmail(partnerEmail, subject, body);
