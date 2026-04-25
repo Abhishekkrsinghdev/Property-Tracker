@@ -16,7 +16,7 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
 
     @Query("""
         SELECT DISTINCT p FROM Property p
-        JOIN PropertyPartner pp ON pp.property = p
+        LEFT JOIN PropertyPartner pp ON pp.property = p
         WHERE pp.user = :user OR p.createdBy = :user
         ORDER BY p.createdAt DESC
         """)
